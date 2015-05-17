@@ -1,0 +1,23 @@
+
+
+INSTRUKCJA URUCHOMIENIA
+
+1.W pierwszej kolejności należy włączyć przynajmniej jeden serwer.
+2.Następnie należy włączyć przynajmniej jednego użytkownika oczekującego na rozgrywke.
+3.Gdy przynajmniej jeden użytkownik czeka na rozgrywkę, można uruchomić użytkownika, który chce wybrać sobie przeciwnika.
+4.Użytkownik wybierający wybiera dla siebie jednego z użytkowników oczekujących na przeciwnika. Serwer dla inicjowanej gry to będzie pierwszy wolny.
+5.Wybrany przeciwnik otrzymuje informacje o wytypowaniu i klucz do serwera gry.
+6.Gracze wymieniają się ruchami na szachownicy.
+7.Jeżeli użytkownik zechce być obserwatorem musi wybrać takową opcje przy uruchamianiu, a następnie wybrać jeden z serwerów na których trwa gra.
+8.Gra się kończy w momencie braku pionków jednego lub drugiego gracz.
+
+OPIS klient.c
+
+W pliku znajdują się identyfikatory segmentów pamięci współdzielonej dla tablicy serwerów, dla tablicy użytkowników oraz pamięć serwera na którym trwa gra. Znajduje się tam także jedna kolejka komunikatów, która służy do przesyłania wybranemu przeciwnikowi informacji o jego wytypowaniu.
+Na początku użytkownik pytany jest czy chce rozgrywać gre czy obserwować. Jeżeli chce grać pytany jest o swoje dane oraz o to czy chce czekać na wyzwanie czy samemu kogoś wyzwać. Jeżeli wybierze oczekiwanie to proces po prostu czeka, a jeżeli chce wyzwać to otrzymuje liste graczy oczekujących na wyzwanie i wybiera sobie któregoś. Następnie wysyła pid wybranego przeciwnika oraz klucz serwera do wszystkich pozostałych graczy, którzy sprawdzają czy wybrany pid jest ich własnym, jeżeli tak to dołączają do gry, a jeżeli nie to nadal czekają.
+Jeżeli użytkownik postanowił zostać obserwatorem to otrzymuje liste serwerów na których prowadzone są gry i wybiera sobie jedną z nich i łączy się z pamięcią współdzieloną o podanym kluczu.
+
+OPIS serwer.c
+
+W pliku znajduje się inicjalizacja wszystkich segmentów pamięci współdzielonej (dla użytkowników ,serwerów i dla jednej gry). Klucz do segmentu z grą oraz semaforów do tej gry losowany jest na początku. W momencie uruchomienia serwera dopisuje on swój klucz i obecny stan do tablicy serwerów w segmencie pamięci współdzielonej dla serwerów. Następnie wysyła informacje o obecnym stanie szachownicy do tej pamięci i oczekuje, aż jakiś użytkownik odbierze tą informacje. Następnie wysyła i odbiera informacje o szachownicy od graczy.
+

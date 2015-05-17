@@ -1,0 +1,21 @@
+SEGMENT PAMIĘCI WSPÓŁDZIELONEJ DLA INFORMACJI O SERWERACH
+Segment ten przechowuje wszystki dane o uruchomionych serwerach, ich klucze oraz informacje czy są zajęci przez jakiś graczy oraz czy w ogóle istnieją. Segment ten współdzielą wszystkie procesy zarówno serwry jak i klienci.
+W przypadku serwerów:
+Ten segmenta pamięci serwerowi jest potrzebny tylko po to aby zapisać w nim swoje instnienie. Po tym nie jest już więcej używany.
+W przypadku klientów:
+Klienci używają ten segmentu, aby dowiedzieć się jakie serwry są wolne i do których mogą się podłączyć. Następnie zmieniają wybrany wolny serwer na zajęty i ponownie przesyłają go do segmentu pamięci.
+W przypadku obserwatorów:
+Obserwatorzy ściągają informacje o wszystkich serwerach na których trwa gra. W ten sposób mogą otrzymać klucz tego serwera i pobierać z niego informacje.
+
+SEGMENT PAMIĘCI WSPÓŁDZIELONEJ DLA INFORMACJI O UŻYTKOWNIKACH
+Segment ten przechowuje informacje o wszystkich użytkownikach którzy oczekują na wybranie do gry. Jest to segment przechowujący elementy typu użytkownik oraz informacje takie jak nick, poziom zaawansowania oraz kolor pionków. Z tego segmentu korzystają wyłącznie gracze. Najpierw podają swoje dane, a następnie jeżeli chcą oczekiwać na gre zapisują swoje dane w następne wolne pole w segmencie. Jeżeli chcą wybrać sobie przeciwnika to podają swoje dane, a następnie otrzymują liste dostępnych oczekujących graczy, czyli pobierają wszystkie informacje o wolnych oczekujacych graczach i zapisują je w tablicy tabUzytkownicy.
+
+SEGMENT PAMIĘCI WSPÓŁDZIELONEJ DLA GRY
+Sgement ten przechowuje 64 chary, gdzie każdy element odpowiada jednemu polu w szachownicy. Na początek czystą szachownice z pionkami tworzy serwer i wczytuje ją do segmentu pamięci. Następnie jeden z klientów, którzy maja również dostęp do tego segmentu(ten który szybciej uzyskał dostęp) pobiera informacje do tabSzachy[8][8] i wyświetla ją uzytkownikowi. Ten może wybrać teraz pionek, którym chce się ruszyć i pole na które chce go przestawić. TabSzachy jest modyfikowany, a następnie informacje są nadpisywane w segmencie. Ten segment ponownie odczytuje serwer i wysyła do segmentu. Teraz dostęp dostaje drugi użytkownik i wykonuje to samo do pierwszy.
+
+SEMAFORY 
+Semafory wykorzystywane są jednynie to kontrolowania dostępu do pamięci współdzielonej z grą danego serwera. Każdy serwer na swoją pamięć współdzieloną oraz semafory. Pierwsze dwa semafory (0,1) kontrolują wymiane informacji serwer-klient, a 2 następne (2,3) kolejność dostępu do serwera klient-klient. Pozostałe dwa semafory (4,5) pozwalają uzyskać dostęp do danych klienta dla obserwatora.
+
+KOLEJKA KOMUNIKATÓW 
+Kolejka tworzona jest tylko w użytkowniku i jej zastosowaniem jest przesłanie informacji o wytypowanym użytkowniku i serwerze do pozostałych użytkowników. Użytkownicy oczekujący odbierają wiadomość weryfikują czy numer pid to ich własny, jeżeli nie to przesyłaja wiadomość dalej.
+	
